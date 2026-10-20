@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Clock</title><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<header><h1>Local Clock</h1>
+<div class="bar"><span id="manPill" class="pill" hidden>Manual time</span><span id="soundState" class="pill"></span>
+<button id="soundBtn">Enable sound</button><button id="muteBtn" aria-pressed="false">Mute</button><button id="setBtn">Settings</button></div></header>
+<main>
+<section id="main" aria-label="Main clock"></section>
+<section id="world" class="world" aria-label="World clocks"></section>
+<section class="panel"><div class="row"><h2>Alarms</h2><button id="addAlarm" class="pri">New alarm</button></div><ul id="alist"></ul></section>
+</main>
+<div id="msg" role="status" aria-live="polite"></div>
+<datalist id="zl"></datalist>
+
+<dialog id="sdlg" aria-labelledby="st"><h2 id="st">Settings</h2>
+<div class="grid">
+<label>Appearance <select id="theme"><option value="system">Follow system</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<label>Time format <select id="fmt"><option value="24">24-hour</option><option value="12">12-hour (AM/PM)</option></select></label>
+<label class="chk"><input type="checkbox" id="sd"> Show date</label>
+</div>
+<h3>Time source</h3>
+<div class="grid"><label>Mode <select id="tmode"><option value="auto">Automatic (system clock)</option><option value="manual">Manual</option></select></label>
+<label>Manual time <input type="datetime-local" id="mtime" step="1"></label><button id="tapply">Apply</button></div>
+<p class="mut">Time comes from your computer’s system clock, which Windows or macOS keeps correct. This app does not contact any time server.</p>
+<h3>Hourly chime</h3>
+<div class="grid"><label class="chk"><input type="checkbox" id="con"> Enable hourly chime</label>
+<label>Follows <select id="follow"></select></label>
+<label>Volume <input type="range" id="cvol" min="0" max="1" step="0.05"></label></div>
+<p>Sound: <b id="cname"></b></p>
+<div class="row2"><button id="cprev">Preview</button><label class="btn">Upload MP3<input type="file" id="cfile" accept=".mp3,audio/mpeg" hidden></label><button id="crest">Restore default</button></div>
+<h3>Backup</h3>
+<div class="row2"><button id="exp">Export settings</button><label class="btn">Import<input type="file" id="imp" accept=".json,application/json" hidden></label><button id="reset" class="danger">Reset everything</button></div>
+<details><summary>Keep the system clock synchronized</summary>
+<p><b>Windows:</b> Settings → Time &amp; language → Date &amp; time → turn on “Set time automatically” and “Set time zone automatically”, then “Sync now”.</p>
+<p><b>macOS:</b> System Settings → General → Date &amp; Time → turn on “Set time and date automatically” and “Set time zone automatically using your current location”.</p></details>
+<div class="row2"><button id="sclose" class="pri">Close</button></div></dialog>
+
+<dialog id="adlg" aria-labelledby="at2"><h2 id="at2">Alarm</h2>
+<div class="grid"><label>Name <input id="an" maxlength="60"></label><label>Time <input type="time" id="at"></label>
+<label>Time zone <input id="az" list="zl" spellcheck="false"></label></div>
+<fieldset><legend>Repeat (none = one-time)</legend><div id="adays" class="days"></div></fieldset>
+<div class="grid"><label>Volume <input type="range" id="av" min="0" max="1" step="0.05"></label>
+<label>Snooze <select id="as"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label></div>
+<p>Sound: <b id="asnd"></b></p>
+<div class="row2"><label class="btn">Upload MP3<input type="file" id="afile" accept=".mp3,audio/mpeg" hidden></label><button id="aprev">Preview</button><button id="arm">Default sound</button></div>
+<p id="aerr" class="err" role="alert"></p>
+<div class="row2"><button id="asave" class="pri">Save</button><button id="acancel">Cancel</button></div></dialog>
+
+<dialog id="rdlg" aria-labelledby="rname"><h2 id="rname"></h2><p id="rtime"></p>
+<div class="row2"><button id="rsnz" class="pri"></button><button id="rdis">Dismiss</button></div></dialog>
+
+<script src="js/tz.js"></script><script src="js/scheduler.js"></script><script src="js/theme.js"></script>
+<script src="js/store.js"></script><script src="js/audio.js"></script><script src="js/app.js"></script>
+</body></html>
