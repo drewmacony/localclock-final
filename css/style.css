@@ -40,3 +40,5 @@ fieldset{border:1px solid var(--bd);border-radius:8px;margin:.8rem 0 0}.days{dis
 #msg{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:.5rem 1rem;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:92vw}
 #msg.show{opacity:1}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+#zlist{max-height:50vh;overflow:auto;margin:0}#zlist button{width:100%;text-align:left;border-radius:0;border-width:0 0 1px}
+.zin{cursor:pointer}#az{text-align:left}

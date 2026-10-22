@@ -12,7 +12,6 @@
 <section class="panel"><div class="row"><h2>Alarms</h2><button id="addAlarm" class="pri">New alarm</button></div><ul id="alist"></ul></section>
 </main>
 <div id="msg" role="status" aria-live="polite"></div>
-<datalist id="zl"></datalist>
 
 <dialog id="sdlg" aria-labelledby="st"><h2 id="st">Settings</h2>
 <div class="grid">
@@ -39,7 +38,7 @@
 
 <dialog id="adlg" aria-labelledby="at2"><h2 id="at2">Alarm</h2>
 <div class="grid"><label>Name <input id="an" maxlength="60"></label><label>Time <input type="time" id="at"></label>
-<label>Time zone <input id="az" list="zl" spellcheck="false"></label></div>
+<label>Time zone <button type="button" id="az"></button></label></div>
 <fieldset><legend>Repeat (none = one-time)</legend><div id="adays" class="days"></div></fieldset>
 <div class="grid"><label>Volume <input type="range" id="av" min="0" max="1" step="0.05"></label>
 <label>Snooze <select id="as"><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option></select></label></div>
@@ -50,6 +49,10 @@
 
 <dialog id="rdlg" aria-labelledby="rname"><h2 id="rname"></h2><p id="rtime"></p>
 <div class="row2"><button id="rsnz" class="pri"></button><button id="rdis">Dismiss</button></div></dialog>
+
+<dialog id="zdlg" aria-labelledby="zt"><h2 id="zt">Choose a time zone</h2>
+<input id="zq" type="search" placeholder="Search city, country or zone (e.g. Accra, Tokyo)" aria-label="Search time zones" autocomplete="off" style="width:100%;margin:.6rem 0">
+<ul id="zlist"></ul><div class="row2"><button type="button" id="zcancel">Cancel</button></div></dialog>
 
 <script src="js/tz.js"></script><script src="js/scheduler.js"></script><script src="js/theme.js"></script>
 <script src="js/store.js"></script><script src="js/audio.js"></script><script src="js/app.js"></script>

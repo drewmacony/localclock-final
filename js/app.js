@@ -6,7 +6,7 @@ const pad = n => String(n).padStart(2, '0');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-let S = Store.load(), lastSec = -1, lastMin = -1, lastKey = null, queue = [], cur = null, curH = null, prev = null, pending = null, removeSnd = false, editing = null;
+let azone = '', S = Store.load(), lastSec = -1, lastMin = -1, lastKey = null, queue = [], cur = null, curH = null, prev = null, pending = null, removeSnd = false, editing = null;
 const now = () => Date.now() + (S.manual ? S.offset : 0);   // system clock (+ optional manual offset)
 const save = () => Store.save(S);
 function msg(t) { const m = $('#msg'); m.textContent = t; m.className = 'show'; clearTimeout(msg.t); msg.t = setTimeout(() => m.className = '', 4000); }
@@ -14,23 +14,39 @@ Audio_.hooks.blocked = () => msg('Sound is blocked by the browser. Click “Enab
 Audio_.hooks.error = n => msg('Could not play this audio file (' + n + ').');
 
 /* ---- time zones ---- */
-const ZONES = TZ.allZones(), byCity = {};
-ZONES.forEach(z => { const o = document.createElement('option'); o.value = z; o.label = TZ.label(z); $('#zl').appendChild(o); const k = TZ.label(z).toLowerCase(); byCity[k] = byCity[k] || z; });
-const resolveZone = v => { v = v.trim().toLowerCase(); return ZONES.find(z => z.toLowerCase() === v) || byCity[v] || null; };
+const ZONES = TZ.allZones();
+const zt = z => `${TZ.label(z)} · ${z} ▾`;
+const zrows = ZONES.map(z => ({ z, txt: (TZ.label(z) + ' ' + z).toLowerCase() }));
+let zcb = null;
+/* Searchable picker listing EVERY time zone the browser supports; calls cb(zone) on choice. */
+function pickZone(cur, cb) { zcb = cb; $('#zq').value = ''; fillZones('', cur); $('#zdlg').showModal(); $('#zq').focus(); }
+function fillZones(q, cur) {
+  q = q.trim().toLowerCase(); const t = Date.now(), list = $('#zlist'); list.innerHTML = '';
+  const hits = zrows.filter(r => r.txt.includes(q));
+  if (!hits.length) { list.innerHTML = '<li class="empty">No matching time zone.</li>'; return; }
+  hits.forEach(r => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.type = 'button'; b.textContent = `${TZ.label(r.z)} — ${r.z} (${TZ.fmtOffset(TZ.offset(t, r.z))})`;
+    if (r.z === cur) b.className = 'pri';
+    b.onclick = () => { $('#zdlg').close(); if (zcb) zcb(r.z); };
+    li.appendChild(b); list.appendChild(li);
+  });
+}
+$('#zq').oninput = e => fillZones(e.target.value);
+$('#zq').onkeydown = e => { if (e.key === 'Enter') { const b = $('#zlist button'); if (b) b.click(); } };
+$('#zcancel').onclick = () => $('#zdlg').close();
 
 /* ---- clocks ---- */
 const clocks = [];
 function mkClock(i, host) {
   const el = document.createElement('article');
   el.className = 'clock ' + (i ? 'small' : 'big');
-  el.innerHTML = `<input class="zin" list="zl" spellcheck="false" aria-label="Time zone for ${i ? 'clock ' + i : 'main clock'} (type a city or zone)"><div class="time"></div><div class="sub"></div>`;
+  el.innerHTML = `<button type="button" class="zin" aria-label="Change time zone for ${i ? 'clock ' + i : 'main clock'}"></button><div class="time"></div><div class="sub"></div>`;
   host.appendChild(el);
-  const inp = el.querySelector('input'); inp.value = S.zones[i];
-  inp.addEventListener('change', () => {
-    const z = resolveZone(inp.value);
-    if (!z) { msg('Unknown time zone: ' + inp.value); inp.value = S.zones[i]; return; }
-    S.zones[i] = z; inp.value = z; lastKey = null; save(); fillFollow(); lastSec = -1; tick();
-  });
+  const inp = el.querySelector('.zin'); inp.textContent = zt(S.zones[i]);
+  inp.addEventListener('click', () => pickZone(S.zones[i], z => {
+    S.zones[i] = z; inp.textContent = zt(z); lastKey = null; save(); fillFollow(); lastSec = -1; tick();
+  }));
   clocks.push({ inp, time: el.querySelector('.time'), sub: el.querySelector('.sub') });
 }
 function render(t) {
@@ -115,11 +131,12 @@ const stopPrev = () => { if (prev) prev.stop(); prev = null; };
 function openAlarm(a) {
   editing = a || null; pending = null; removeSnd = false;
   const d = a || { name: '', time: '07:00', zone: S.zones[0], days: [], vol: 0.8, snooze_min: 5 };
-  $('#an').value = d.name; $('#at').value = d.time; $('#az').value = d.zone; $('#av').value = d.vol; $('#as').value = d.snooze_min;
+  $('#an').value = d.name; $('#at').value = d.time; azone = d.zone; $('#az').textContent = zt(azone); $('#av').value = d.vol; $('#as').value = d.snooze_min;
   document.querySelectorAll('#adays input').forEach(c => c.checked = d.days.includes(+c.value));
   $('#asnd').textContent = a && a.hasSound ? 'Custom MP3 saved' : 'Default sound'; $('#aerr').textContent = ''; $('#afile').value = '';
   $('#adlg').showModal();
 }
+$('#az').onclick = () => pickZone(azone, z => { azone = z; $('#az').textContent = zt(z); });
 $('#addAlarm').onclick = () => openAlarm(null);
 $('#acancel').onclick = () => $('#adlg').close();
 $('#adlg').addEventListener('close', stopPrev);
@@ -128,7 +145,7 @@ $('#arm').onclick = () => { pending = null; removeSnd = true; $('#afile').value 
 $('#aprev').onclick = async () => { await Audio_.unlock(); stopPrev(); const b = pending || (!removeSnd && editing && editing.hasSound ? await Store.getSound('alarm:' + editing.id) : null); prev = await Audio_.play(b, +$('#av').value, false); };
 $('#asave').onclick = async () => {
   const err = t => { $('#aerr').textContent = t; };
-  const zone = resolveZone($('#az').value); if (!zone) return err('Choose a valid time zone.');
+  const zone = azone; if (!TZ.isValid(zone)) return err('Choose a valid time zone.');
   const time = $('#at').value; if (!/^\d\d:\d\d$/.test(time)) return err('Pick a time.');
   const days = [...document.querySelectorAll('#adays input:checked')].map(c => +c.value);
   const a = editing || { id: uid(), hasSound: false };
@@ -182,7 +199,7 @@ function tick() {
   if (sec !== lastSec) { lastSec = sec; render(t); checkChime(t); checkAlarms(t); }
   const m = Math.floor(t / 6e4); if (m !== lastMin) { lastMin = m; renderAlarms(); pills(); }
 }
-function refresh() { Theme.apply(S.theme); clocks.forEach((c, i) => c.inp.value = S.zones[i]); fillFollow(); lastSec = lastMin = -1; lastKey = null; pills(); tick(); }
+function refresh() { Theme.apply(S.theme); clocks.forEach((c, i) => c.inp.textContent = zt(S.zones[i])); fillFollow(); lastSec = lastMin = -1; lastKey = null; pills(); tick(); }
 mkClock(0, $('#main')); for (let i = 1; i < 4; i++) mkClock(i, $('#world'));
 Theme.apply(S.theme); fillFollow(); tick(); pills();
 setInterval(tick, 250);
