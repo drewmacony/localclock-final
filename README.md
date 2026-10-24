@@ -7,6 +7,7 @@ Double-click `index.html` (Chrome, Edge, Firefox, Safari). No server needed. If 
 Click **Enable sound** once per session (browsers block audio until you interact).
 
 ## Structure
+- `js/timers.js` stopwatch (laps) and countdown timer (alarm sound + dialog when finished).
 - `js/tz.js` time zones (Intl), `js/scheduler.js` next-alarm maths, `js/audio.js` sounds, `js/store.js` persistence, `js/theme.js`, `js/app.js` UI, clocks, chime, alarm runtime.
 - `tests/run.js` automated tests: `node tests/run.js`
 
@@ -20,7 +21,7 @@ Settings and alarms: `localStorage`. Uploaded MP3s: IndexedDB (database `localcl
 - Built-in chime/alarm sounds are synthesized (no asset files). MP3 limit: 8 MB.
 
 ## Limitations
-Alarms cannot fire while the browser/tab is closed or the PC is asleep, and background tabs may be throttled (the app tolerates this but cannot wake the computer). Reliable closed-app alarms need a native app using OS scheduling (Task Scheduler / launchd). Not implemented: stopwatch/timer, separate chime per clock.
+Alarms cannot fire while the browser/tab is closed or the PC is asleep, and background tabs may be throttled (the app tolerates this but cannot wake the computer). Reliable closed-app alarms need a native app using OS scheduling (Task Scheduler / launchd). Stopwatch and timer state is not saved across reloads. Not implemented: separate chime per clock.
 
 ## Checklist
 Automated (`tests/run.js`): time-zone offsets, DST gap/overlap, next-occurrence for one-time/repeating alarms.

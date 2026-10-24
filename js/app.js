@@ -205,4 +205,5 @@ Theme.apply(S.theme); fillFollow(); tick(); pills();
 setInterval(tick, 250);
 document.addEventListener('visibilitychange', tick);
 ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => Audio_.unlock().then(pills), { once: true }));
+window.AppState = { muted: () => S.mute };
 })();
