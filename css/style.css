@@ -42,3 +42,8 @@ fieldset{border:1px solid var(--bd);border-radius:8px;margin:.8rem 0 0}.days{dis
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 #zlist{max-height:50vh;overflow:auto;margin:0}#zlist button{width:100%;text-align:left;border-radius:0;border-width:0 0 1px}
 .zin{cursor:pointer}#az{text-align:left}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:1rem}@media(max-width:720px){.tools{grid-template-columns:1fr}}
+.tl{font-size:clamp(2rem,7vw,3rem);text-align:center;margin:.6rem 0}.tin{display:flex;gap:.6rem;justify-content:center;margin:.6rem 0}
+.tin label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mut)}.tin input{width:5rem;font-size:1.5rem;text-align:center}
+.laps{list-style:none;margin:.6rem 0 0;padding:0;max-height:10rem;overflow:auto;font-variant-numeric:tabular-nums}
+.laps li{display:flex;justify-content:space-between;padding:.25rem 0;border-top:1px solid var(--bd)}

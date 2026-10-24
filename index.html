@@ -9,6 +9,14 @@
 <main>
 <section id="main" aria-label="Main clock"></section>
 <section id="world" class="world" aria-label="World clocks"></section>
+<section class="tools" aria-label="Stopwatch and timer">
+<div class="panel"><h2>Stopwatch</h2><div class="time tl" id="swt" role="timer" aria-live="off">00:00.00</div>
+<div class="row2"><button id="swgo" class="pri">Start</button><button id="swlap" disabled>Lap</button><button id="swrst">Reset</button></div><ol id="swlaps" class="laps"></ol></div>
+<div class="panel"><h2>Timer</h2>
+<div id="tin" class="tin"><label>Hours <input id="th" type="number" min="0" max="99" value="0"></label><label>Min <input id="tm" type="number" min="0" max="59" value="5"></label><label>Sec <input id="ts" type="number" min="0" max="59" value="0"></label></div>
+<div class="time tl" id="tdisp" role="timer" aria-live="off" hidden>00:00:00</div>
+<div class="row2"><button id="tgo" class="pri">Start</button><button id="trst">Reset</button><span class="mut">Presets:</span><button data-preset="1">1 min</button><button data-preset="5">5 min</button><button data-preset="10">10 min</button></div></div>
+</section>
 <section class="panel"><div class="row"><h2>Alarms</h2><button id="addAlarm" class="pri">New alarm</button></div><ul id="alist"></ul></section>
 </main>
 <div id="msg" role="status" aria-live="polite"></div>
@@ -47,6 +55,8 @@
 <p id="aerr" class="err" role="alert"></p>
 <div class="row2"><button id="asave" class="pri">Save</button><button id="acancel">Cancel</button></div></dialog>
 
+<dialog id="tdlg" aria-labelledby="tdt"><h2 id="tdt">Time’s up</h2><p>Your timer has finished.</p><div class="row2"><button id="tdis" class="pri">Dismiss</button></div></dialog>
+
 <dialog id="rdlg" aria-labelledby="rname"><h2 id="rname"></h2><p id="rtime"></p>
 <div class="row2"><button id="rsnz" class="pri"></button><button id="rdis">Dismiss</button></div></dialog>
 
@@ -55,5 +65,5 @@
 <ul id="zlist"></ul><div class="row2"><button type="button" id="zcancel">Cancel</button></div></dialog>
 
 <script src="js/tz.js"></script><script src="js/scheduler.js"></script><script src="js/theme.js"></script>
-<script src="js/store.js"></script><script src="js/audio.js"></script><script src="js/app.js"></script>
+<script src="js/store.js"></script><script src="js/audio.js"></script><script src="js/app.js"></script><script src="js/timers.js"></script>
 </body></html>
